@@ -12,7 +12,7 @@
       let
         pkgs = import nixpkgs { inherit system; };
         # change to your liking
-        keyboard = "lily58";
+        keyboard = "lily58/rev1";
         keymap = "s1syph0s";
       in
       {
