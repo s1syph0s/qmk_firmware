@@ -259,5 +259,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+// Patch unicode input
+
+static led_t unicode_saved_led_state;
+static uint8_t unicode_saved_mods;
+
+#ifndef UNICODE_KEY_LNX
+#define UNICODE_KEY_LNX LCTL(LSFT(KC_U))
+#endif
+
+#ifndef UNICODE_TYPE_DELAY
+#define UNICODE_TYPE_DELAY 10
+#endif
+void unicode_input_start(void) {
+    unicode_saved_led_state = host_keyboard_led_state();
+
+    // Note the order matters here!
+    // Need to do this before we mess around with the mods, or else
+    // UNICODE_KEY_LNX (which is usually Ctrl-Shift-U) might not work
+    // correctly in the shifted case.
+    if (unicode_config.input_mode == UNICODE_MODE_LINUX && unicode_saved_led_state.caps_lock) {
+        tap_code(KC_CAPS_LOCK);
+    }
+
+    unicode_saved_mods = get_mods(); // Save current mods
+    clear_mods();                    // Unregister mods to start from a clean state
+    clear_weak_mods();
+
+    register_code16(UNICODE_KEY_LNX);
+
+    wait_ms(UNICODE_TYPE_DELAY);
+}
+
+void unicode_input_finish(void) {
+    tap_code(KC_SPACE);
+    unregister_code16(UNICODE_KEY_LNX);
+    if (unicode_saved_led_state.caps_lock) {
+        tap_code(KC_CAPS_LOCK);
+    }
+
+    set_mods(unicode_saved_mods); // Reregister previously set mods
+}
 
 #endif // OLED_ENABLE
