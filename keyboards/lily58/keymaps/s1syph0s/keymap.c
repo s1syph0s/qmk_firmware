@@ -302,3 +302,7 @@ void unicode_input_finish(void) {
 }
 
 #endif // OLED_ENABLE
+
+// Local Variables:
+// +format-inhibit: t
+// End:
