@@ -35,7 +35,10 @@
         devShell = pkgs.mkShell {
           KEYBOARD = keyboard;
           KEYMAP = keymap;
-          buildInputs = [ pkgs.qmk ];
+          buildInputs = [
+            pkgs.qmk
+            pkgs.clang-tools
+          ];
         };
       }
     );
